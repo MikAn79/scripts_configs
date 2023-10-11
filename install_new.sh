@@ -8,22 +8,28 @@ echo "| Итак, приступимс милорд:"
 
 #Обновление системы после установки:
 
+echo ""
+echo "| Обновимся :"
 
 sudo apt update
 sudo apt upgrade -y
 sudo apt full-upgrade -y
 sudo apt autoremove && sudo apt clean && sudo apt autoclean && sudo apt autoremove --purge
-
+sudo apt update -y
 # CURL
 
 sudo apt-get install curl -y
 
 # установка Flatpak
+echo ""
+echo "| Установим flatpak:"
 
 sudo apt install flatpak plasma-discover-backend-flatpak
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
 # Установка софта
+echo ""
+echo "| Установим софт:"
 
 # preload
 
@@ -50,10 +56,13 @@ sudo apt install bleachbit -y
 sudo apt install mc -y
 
 # Google Earth  # Google Chrome
+echo ""
+echo "| Google ... Не забыть почистить репы ))):"
 
 wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
 sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
 sudo apt update -y
+sudo touch /etc/default/google-chrome
 sudo apt install google-chrome-stable -y
 sudo apt install google-earth-pro-stable -y
 
@@ -117,6 +126,8 @@ sudo usermod -aG kvm $USER &&
 sudo usermod -aG libvirt $USER &&
 
 # Очистка после установки
+echo ""
+echo "| Почистимся... чистота - залог здоровья. Порядок - прежде всего )):"
 
 sudo apt autoremove && sudo apt clean && sudo apt autoclean && sudo apt autoremove --purge
 
