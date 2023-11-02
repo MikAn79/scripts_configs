@@ -11,7 +11,8 @@ echo "Добавляем репозиторий Wine..."
 dpkg --add-architecture i386 
 wget -nc https://dl.winehq.org/wine-builds/winehq.key
 apt-key add winehq.key
-apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ mantic main'
+#apt-add-repository 'deb https://dl.winehq.org/wine-builds/ubuntu/ mantic main'
+wget -NP /etc/apt/sources.list.d/ https://dl.winehq.org/wine-builds/ubuntu/dists/mantic/winehq-mantic.sources
 
 # Обновляем список пакетов
 echo "Обновляем список пакетов..."

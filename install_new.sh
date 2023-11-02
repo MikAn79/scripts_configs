@@ -11,6 +11,9 @@ echo "| Итак, приступимс милорд:"
 echo ""
 echo "| Обновимся :"
 
+## Установка драйверов
+
+sudo add-apt-repository ppa:graphics-drivers/ppa
 sudo apt update
 sudo apt upgrade -y
 sudo apt full-upgrade -y
@@ -90,6 +93,9 @@ wget -O - https://raw.githubusercontent.com/laurent22/joplin/dev/Joplin_install_
 
 #echo "Installing VLC Media Player"
 sudo apt install vlc -y
+
+#Nvidia drivers
+sudo ubuntu-drivers autoinstall
 
 
 # VS CODE
