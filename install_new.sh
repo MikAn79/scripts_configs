@@ -15,10 +15,9 @@ echo "| Обновимся :"
 
 sudo add-apt-repository ppa:graphics-drivers/ppa
 sudo apt update
-sudo apt upgrade -y
 sudo apt full-upgrade -y
-sudo apt autoremove && sudo apt clean && sudo apt autoclean && sudo apt autoremove --purge
 sudo apt update -y
+
 # CURL
 
 sudo apt-get install curl -y
@@ -87,15 +86,15 @@ sudo apt install mainline -y
 
 #Joplin
 
-wget -O - https://raw.githubusercontent.com/laurent22/joplin/dev/Joplin_install_and_update.sh | bash
+#wget -O - https://raw.githubusercontent.com/laurent22/joplin/dev/Joplin_install_and_update.sh | bash
 
 #VLC Media Player
 
 #echo "Installing VLC Media Player"
-sudo apt install vlc -y
+#sudo apt install vlc -y
 
 #Nvidia drivers
-sudo ubuntu-drivers autoinstall
+#sudo ubuntu-drivers autoinstall
 
 
 # VS CODE
@@ -108,7 +107,7 @@ sudo apt install code -y
 
 # Установка Anydesk
 
-sudo flatpak install anydesk -y
+#sudo flatpak install anydesk -y
 echo ""
 echo ">>> Anydesk успешно установлен и настроен."
 
@@ -135,7 +134,7 @@ sudo usermod -aG libvirt $USER &&
 echo ""
 echo "| Почистимся... чистота - залог здоровья. Порядок - прежде всего )):"
 
-sudo apt autoremove && sudo apt clean && sudo apt autoclean && sudo apt autoremove --purge
+sudo apt autoremove && sudo apt clean && sudo apt autoclean
 
 echo 'Все готово/ Система настроена. Рекомендуется перезагрузка '
 
