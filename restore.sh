@@ -33,9 +33,9 @@ restore "$DEST2" "$BACKUP_SOURCE/Изображения/"
 restore "$DEST3" "$BACKUP_SOURCE/Programs/"
 restore "$DEST4" "$BACKUP_SOURCE/Yandex.Disk/"
 restore "$DEST5" "$BACKUP_SOURCE/yandex-browser-beta/"
-restore "$DEST6" "$BACKUP_SOURCE/.thunderbird/"
-restore "$DEST7" "$BACKUP_SOURCE/yandex-disk/"
-restore "$DEST8" "$BACKUP_SOURCE/yd-tools/"
+restore "$DEST6" "$BACKUP_SOURCE/yandex-disk/"
+restore "$DEST7" "$BACKUP_SOURCE/yd-tools/"
+restore "$DEST8" "$BACKUP_SOURCE/.thunderbird/"
 restore "$DEST9" "$BACKUP_SOURCE/TelegramDesktop/"
 
 # Уведомление о завершении
