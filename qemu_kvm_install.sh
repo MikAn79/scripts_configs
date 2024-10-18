@@ -8,4 +8,3 @@ sudo systemctl start libvirtd &&
 sudo usermod -aG kvm $USER &&
 sudo usermod -aG libvirt $USER &&
 
-sudo virt-manager
