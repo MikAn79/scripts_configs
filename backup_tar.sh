@@ -27,6 +27,20 @@ MAX_ARCHIVES=2
 EXCLUDE1="/home/mikan/.local/share/TelegramDesktop/tdata/user_data/cache"
 EXCLUDE2="/home/mikan/.local/share/TelegramDesktop/tdata/user_data/media_cache"
 
+
+
+# Автоматическое добавление всех переменных, начинающихся на "SOURCE", в массив
+SOURCES=()
+for var in $(compgen -v | grep '^SOURCE'); do
+    SOURCES+=("${!var}")
+done
+
+# Проверка, добавлены ли папки в массив
+if [ ${#SOURCES[@]} -eq 0 ]; then
+    echo "Нет папок для архивации."
+    exit 1
+fi
+
 # Функция для удаления старых архивов
 cleanup_old_archives() {
     echo "Проверка количества архивов в папке $BACKUP_DIR ..."
@@ -52,19 +66,6 @@ cleanup_old_archives() {
         echo "Количество архивов не превышает лимит ($MAX_ARCHIVES)."
     fi
 }
-
-# Автоматическое добавление всех переменных, начинающихся на "SOURCE", в массив
-SOURCES=()
-for var in $(compgen -v | grep '^SOURCE'); do
-    SOURCES+=("${!var}")
-done
-
-# Проверка, добавлены ли папки в массив
-if [ ${#SOURCES[@]} -eq 0 ]; then
-    echo "Нет папок для архивации."
-    exit 1
-fi
-
 # Удаление старых архивов перед созданием нового
 cleanup_old_archives
 

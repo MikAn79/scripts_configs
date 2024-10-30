@@ -15,11 +15,7 @@ SOURCE9="/home/mikan/.local/share/TelegramDesktop"
 DESTINATION="/mnt/sdb1/_Нужное/Backup/Linux_backup/111"
 
 # Опции rsync
-RSYNC_OPTS="-avzrch --delete --exclude=$EXCLUDE1 --exclude=$EXCLUDE2"
-
-# Папки для исключения из архивации
-EXCLUDE1="/home/mikan/.local/share/TelegramDesktop/tdata/user_data/cache/*"
-EXCLUDE2="/home/mikan/.local/share/TelegramDesktop/tdata/user_data/media_cache/*"
+RSYNC_OPTS="-avzrch --delete"
 
 # Функция для выполнения резервного копирования
 backup() {
