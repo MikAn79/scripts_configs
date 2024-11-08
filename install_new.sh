@@ -68,7 +68,6 @@ sudo touch /etc/default/google-chrome
 sudo apt install google-chrome-stable -y
 sudo apt install google-earth-pro-stable -y
 
-
 # neofetch
 
 sudo apt install neofetch -y
@@ -96,10 +95,9 @@ sudo apt install mainline -y
 #Nvidia drivers
 #sudo ubuntu-drivers autoinstall
 
-
 # VS CODE
 
-curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor >microsoft.gpg
 sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
 sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
 sudo apt update -y
@@ -124,14 +122,14 @@ sudo apt install grub-customizer -y
 
 # Установка Qemu/KVM
 
-sudo apt install qemu-kvm virt-manager virtinst libvirt-clients bridge-utils libvirt-daemon-system -y  &&
-sudo systemctl enable --now libvirtd &&
-sudo systemctl start libvirtd &&
-sudo usermod -aG kvm $USER &&
-sudo usermod -aG libvirt $USER &&
+sudo apt install qemu-kvm virt-manager virtinst libvirt-clients bridge-utils libvirt-daemon-system -y &&
+    sudo systemctl enable --now libvirtd &&
+    sudo systemctl start libvirtd &&
+    sudo usermod -aG kvm $USER &&
+    sudo usermod -aG libvirt $USER &&
 
-# Очистка после установки
-echo ""
+    # Очистка после установки
+    echo ""
 echo "| Почистимся... чистота - залог здоровья. Порядок - прежде всего )):"
 
 sudo apt autoremove && sudo apt clean && sudo apt autoclean

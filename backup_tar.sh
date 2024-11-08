@@ -44,23 +44,23 @@ fi
 # Функция для удаления старых архивов
 cleanup_old_archives() {
     echo "Проверка количества архивов в папке $BACKUP_DIR ..."
-
+    
     # Находим архивы с шаблоном linux_backup_*.tar.gz
     archives=($(ls -1t "$BACKUP_DIR"/linux_backup_*.tar.gz 2>/dev/null))
-
+    
     # Считаем количество архивов
     archive_count=${#archives[@]}
-
+    
     # Если архивов больше, чем MAX_ARCHIVES, удаляем самые старые
     if [ "$archive_count" -gt "$MAX_ARCHIVES" ]; then
         echo "Найдено больше $MAX_ARCHIVES архивов. Удаление старых архивов..."
-
+        
         # Удаляем самые старые архивы
         for ((i = $MAX_ARCHIVES; i < $archive_count; i++)); do
             echo "Удаление архива: ${archives[$i]}"
             rm -f "${archives[$i]}"
         done
-
+        
         echo "Удаление старых архивов завершено."
     else
         echo "Количество архивов не превышает лимит ($MAX_ARCHIVES)."
