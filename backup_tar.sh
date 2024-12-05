@@ -21,7 +21,7 @@ ARCHIVE="$BACKUP_DIR/linux_backup_$(date +'%Y-%m-%d').tar.gz"
 RSYNC_OPTS="-avh --delete --exclude=$EXCLUDE1 --exclude=$EXCLUDE2"
 
 # Максимальное количество архивов
-MAX_ARCHIVES=2
+MAX_ARCHIVES=1
 
 # Папки для исключения из архивации и rsync
 EXCLUDE1="/home/mikan/.local/share/TelegramDesktop/tdata/user_data/cache"
