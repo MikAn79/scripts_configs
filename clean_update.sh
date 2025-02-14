@@ -70,6 +70,10 @@ flatpak uninstall --unused -y
 #else
 #    echo "Утилита fwupdmgr не установлена. Пропуск обновления прошивок."
 #fi
+# Удалите все пустые папки
+find ~/.cache/ -type d -empty -delete
+
+
 
 echo "Рекомендуется выполнить перезагрузку системы"
 
