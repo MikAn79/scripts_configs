@@ -18,7 +18,7 @@ dnf install -y \
 
 # Установка драйверов NVIDIA
 echo "Установка драйверов NVIDIA и зависимостей..."
-dnf install gcc kernel-headers kernel-devel akmod-nvidia xorg-x11-drv-nvidia xorg-x11-drv-nvidia-libs xorg-x11-drv-nvidia-power
+dnf install gcc kernel-headers kernel-devel dkms akmod-nvidia xorg-x11-drv-nvidia xorg-x11-drv-nvidia-libs xorg-x11-drv-nvidia-power
 
 # Включение multilib (32-битные пакеты)
 echo "Включение поддержки 32-битных архитектур..."
