@@ -10,6 +10,7 @@ SOURCE6="/home/mikan/.config/yandex-disk"
 SOURCE7="/home/mikan/.config/yd-tools"
 SOURCE8="/home/mikan/.thunderbird"
 SOURCE9="/home/mikan/.local/share/TelegramDesktop"
+SOURCE10="/home/mikan/.var/app/md.obsidian.Obsidian"
 
 # Папка назначения для резервного копирования
 BACKUP_DIR="/mnt/sdb1/_Нужное/Backup/Linux_backup"
@@ -21,13 +22,37 @@ ARCHIVE="$BACKUP_DIR/linux_backup_$(date +'%Y-%m-%d').tar.gz"
 RSYNC_OPTS="-avh --delete --exclude=$EXCLUDE1 --exclude=$EXCLUDE2"
 
 # Максимальное количество архивов
-MAX_ARCHIVES=1
+MAX_ARCHIVES=2
 
 # Папки для исключения из архивации и rsync
 EXCLUDE1="/home/mikan/.local/share/TelegramDesktop/tdata/user_data/cache"
 EXCLUDE2="/home/mikan/.local/share/TelegramDesktop/tdata/user_data/media_cache"
 
+# Функция для удаления старых архивов
+cleanup_old_archives() {
+    echo "Проверка количества архивов в папке $BACKUP_DIR ..."
 
+    # Находим архивы с шаблоном linux_backup_*.tar.gz
+    archives=($(ls -1t "$BACKUP_DIR"/linux_backup_*.tar.gz 3>/dev/null))
+
+    # Считаем количество архивов
+    archive_count=${#archives[@]}
+
+    # Если архивов больше, чем MAX_ARCHIVES, удаляем самые старые
+    if [ "$archive_count" -gt "$MAX_ARCHIVES" ]; then
+        echo "Найдено больше $MAX_ARCHIVES архивов. Удаление старых архивов..."
+
+        # Удаляем самые старые архивы
+        for ((i = $MAX_ARCHIVES; i < $archive_count; i++)); do
+            echo "Удаление архива: ${archives[$i]}"
+            rm -f "${archives[$i]}"
+        done
+
+        echo "Удаление старых архивов завершено."
+    else
+        echo "Количество архивов не превышает лимит ($MAX_ARCHIVES)."
+    fi
+}
 
 # Автоматическое добавление всех переменных, начинающихся на "SOURCE", в массив
 SOURCES=()
@@ -41,31 +66,6 @@ if [ ${#SOURCES[@]} -eq 0 ]; then
     exit 1
 fi
 
-# Функция для удаления старых архивов
-cleanup_old_archives() {
-    echo "Проверка количества архивов в папке $BACKUP_DIR ..."
-    
-    # Находим архивы с шаблоном linux_backup_*.tar.gz
-    archives=($(ls -1t "$BACKUP_DIR"/linux_backup_*.tar.gz 2>/dev/null))
-    
-    # Считаем количество архивов
-    archive_count=${#archives[@]}
-    
-    # Если архивов больше, чем MAX_ARCHIVES, удаляем самые старые
-    if [ "$archive_count" -gt "$MAX_ARCHIVES" ]; then
-        echo "Найдено больше $MAX_ARCHIVES архивов. Удаление старых архивов..."
-        
-        # Удаляем самые старые архивы
-        for ((i = $MAX_ARCHIVES; i < $archive_count; i++)); do
-            echo "Удаление архива: ${archives[$i]}"
-            rm -f "${archives[$i]}"
-        done
-        
-        echo "Удаление старых архивов завершено."
-    else
-        echo "Количество архивов не превышает лимит ($MAX_ARCHIVES)."
-    fi
-}
 # Удаление старых архивов перед созданием нового
 cleanup_old_archives
 
