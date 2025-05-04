@@ -21,13 +21,12 @@ echo "=== Начало процесса очистки и обновления =
 
 # Шаг 1: Очистка кэша DNF
 echo "Очистка кэша DNF..."
-#dnf clean all
 dnf autoremove -y
 dnf clean all
 rm -f /var/cache/dnf/fastestmirror.cache
 pkcon refresh force -y
 
-# Шаг 2: Удаление старых ядер (оставляем последние 2 версии)
+# Шаг 2: Удаление старых ядер (кроме 2 последних версий)
 echo "Удаление старых ядер (кроме 2 последних версий)..."
 old_kernels=$(dnf repoquery --installonly --latest-limit=-2 -q)
 if [ -n "$old_kernels" ]; then
@@ -41,7 +40,8 @@ echo "Очистка системных временных файлов..."
 rm -rf /var/tmp/*
 rm -rf /tmp/*
 journalctl --vacuum-time=2d
-# Шаг 4: Очистка кэша страниц
+
+# Шаг 4: Очистка кэша страниц памяти
 echo "Очистка кэша страниц памяти..."
 sync; echo 1 > /proc/sys/vm/drop_caches
 
@@ -57,27 +57,23 @@ flatpak update -y
 echo "Очистка неиспользуемых Flatpak-приложений..."
 flatpak uninstall --unused -y
 
-# Шаг 8: Обновление прошивок (опционально, с проверкой наличия fwupdmgr)
-#echo "Проверка обновлений прошивок..."
-#if command -v fwupdmgr &> /dev/null; then
-#    echo "Обновление прошивок через fwupdmgr..."
-#    # Игнорируем ошибку, если метаданные уже обновлены
-#    fwupdmgr refresh || echo "Метаданные уже обновлены, продолжение..."
-#    # Проверяем наличие обновлений
-#    updates_available=$(fwupdmgr get-updates --json | jq -r '.Devices | length')
-#    if [ "$updates_available" -gt 0 ]; then
-#        echo "Найдены обновления прошивок. Установка..."
-#        fwupdmgr update -y
-#    else
-#        echo "Нет доступных обновлений прошивок."
-#    fi
-#else
-#    echo "Утилита fwupdmgr не установлена. Пропуск обновления прошивок."
-#fi
-# Удалите все пустые папки
+# Удаление пустых папок в кэше
 find ~/.cache/ -type d -empty -delete
 
+# Шаг 8: Проверка обновления ядра и пересборка модулей
+echo "Проверка, обновилось ли ядро..."
 
+current_kernel=$(uname -r)
+latest_installed_kernel=$(rpm -q kernel | sort -V | tail -n 1 | sed 's/kernel-//')
+
+if [[ "$current_kernel" != "$latest_installed_kernel" ]]; then
+    echo "Обнаружено обновление ядра: $current_kernel → $latest_installed_kernel"
+    echo "Пересборка модулей ядра и initramfs..."
+    akmods --force
+    dracut --force
+else
+    echo "Ядро не обновлялось. Пересборка не требуется."
+fi
 
 echo "Рекомендуется выполнить перезагрузку системы"
 
