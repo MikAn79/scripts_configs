@@ -58,7 +58,7 @@ echo "Очистка неиспользуемых Flatpak-приложений..
 flatpak uninstall --unused -y
 
 # Удаление пустых папок в кэше
-find ~/.cache/ -type d -empty -delete
+find /home/mikan/.cache/ -type d -empty -delete
 
 # Шаг 8: Проверка обновления ядра и пересборка модулей
 echo "Проверка, обновилось ли ядро..."
