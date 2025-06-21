@@ -155,7 +155,7 @@ fi
 # Удаление пустых папок в кэше
 if [[ "$1" == "" || "$1" == "--clean-cache" ]]; then
     log_message "INFO" "Удаление пустых папок в кэше..."
-    find "$HOME/.cache/" -type d -empty -delete
+    find "/home/mikan/.cache/" -type d -empty -delete
 fi
 
 # Шаг 8: Проверка обновления ядра и пересборка модулей
