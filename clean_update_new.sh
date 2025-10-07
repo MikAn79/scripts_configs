@@ -172,7 +172,7 @@ if [[ "$1" == "" || "$1" == "--check-kernel" ]]; then
             log_message "INFO" "(Сухой запуск) Будет выполнено akmods и dracut --all --force"
         else
             akmods --force  # Пересобрать модули
-            dracut --regenerate-all --force # Пересоздать initramfs для всех ядер
+            dracut --force # Пересоздать initramfs для всех ядер
         fi
     else
         log_message "INFO" "Ядро не обновлялось. Пересборка не требуется."

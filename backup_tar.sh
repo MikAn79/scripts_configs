@@ -11,6 +11,7 @@ SOURCE7="/home/mikan/.config/yd-tools"
 SOURCE8="/home/mikan/.thunderbird"
 SOURCE9="/home/mikan/.local/share/TelegramDesktop"
 SOURCE10="/home/mikan/.var/app/md.obsidian.Obsidian"
+SOURCE11="/home/mikan/.zen"
 
 # Папка назначения для резервного копирования
 BACKUP_DIR="/mnt/sdb1/_Нужное/Backup/Linux_backup"

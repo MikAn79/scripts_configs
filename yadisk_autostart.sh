@@ -1,4 +1,4 @@
 #!/bin/bash
 
-sleep 15
+sleep 25
 yandex-disk-indicator

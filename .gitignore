@@ -1,0 +1,11 @@
+/home/mikan/Programs/scripts_configs/Virtualisation/spice-guest-tools-latest.exe
+/home/mikan/Programs/scripts_configs/Virtualisation/VBoxGuestAdditions_7.2.0.iso
+/home/mikan/Programs/scripts_configs/Virtualisation/virtio-win-0.1.285.iso
+/home/mikan/Programs/scripts_configs/Virtualisation/virtio-win-guest-tools.exe
+/home/mikan/Programs/scripts_configs/Virtualisation/Oracle_VirtualBox_Extension_Pack-7.2.2-170484.vbox-extpack
+*.log
+*.iso
+*.exe
+*.vbox-extpack
+.DS_Store
+Thumbs.db
