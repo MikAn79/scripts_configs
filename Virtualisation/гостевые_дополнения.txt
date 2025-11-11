@@ -1,0 +1,2 @@
+https://www.spice-space.org/download/windows/spice-guest-tools/    # для Qemu\kvm
+https://download.virtualbox.org/virtualbox/                        # для VirtualBox

@@ -97,16 +97,13 @@ log_message "Installing and enabling SSH..."
 dnf install -y openssh-server
 systemctl enable --now sshd
 
-# Check and apply firmware updates to improve hardware compatibility and performance
-log_message "Checking for firmware updates..."
-fwupdmgr refresh --force
-fwupdmgr get-updates
-fwupdmgr update -y
 
 # Enable RPM Fusion repositories to access additional software packages and codecs
 log_message "Enabling RPM Fusion repositories..."
 dnf install -y https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
 dnf install -y https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+sed -i 's/enabled=1/enabled=0/g' /etc/yum.repos.d/fedora-cisco-openh264.repo
+dnf remove -y openh264 mozilla-openh264 gstreamer1-plugin-openh264
 dnf group update core -y
 
 # Install multimedia codecs to enhance multimedia capabilities
@@ -115,10 +112,6 @@ dnf swap ffmpeg-free ffmpeg --allowerasing -y
 dnf update @multimedia --setopt="install_weak_deps=False" --exclude=PackageKit-gstreamer-plugin -y
 dnf update @sound-and-video -y
 
-# Install Hardware Accelerated Codecs for Intel integrated GPUs. This improves video playback and encoding performance on systems with Intel graphics.
-log_message "Installing Intel Hardware Accelerated Codecs..."
-dnf -y install intel-media-driver
-
 
 # App Installation
 # Install essential applications
@@ -126,10 +119,6 @@ log_message "Installing essential applications..."
 dnf install -y mc btop htop rsync inxi fastfetch unzip unrar git wget curl syncthing
 log_message "Essential applications installed successfully."
 
-# Install Internet & Communication applications
-log_message "Installing Thunderbird..."
-dnf install -y thunderbird
-log_message "Thunderbird installed successfully."
 
 # Install Office Productivity applications
 log_message "Installing Obsidian..."
@@ -153,9 +142,6 @@ log_message "Visual Studio Code installed successfully."
 log_message "Installing VLC..."
 flatpak install -y flathub org.videolan.VLC
 log_message "VLC installed successfully."
-log_message "Installing Spotify..."
-flatpak install -y flathub com.spotify.Client
-log_message "Spotify installed successfully."
 
 # Install Remote Networking applications
 log_message "Installing RustDesk..."

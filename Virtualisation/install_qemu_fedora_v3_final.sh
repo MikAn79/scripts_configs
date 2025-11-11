@@ -1,28 +1,28 @@
 #!/bin/bash
-# Скрипт установки QEMU/KVM на Fedora
+# Скрипт установки QEMU/KVM и Cockpit на Fedora
 set -e
 
-# Опционально: логирование (раскомментируйте, если нужно)
+# Опционально: логирование (раскомментируйте при необходимости)
 # exec > >(tee -a ~/kvm-install-$(date +%F_%H-%M).log) 2>&1
 
-echo "=== Установка QEMU/KVM на Fedora ==="
+echo "=== Установка QEMU/KVM и Cockpit на Fedora ==="
 
 # Проверка, что система — Fedora
 if ! grep -q "Fedora" /etc/os-release 2>/dev/null; then
-    echo "⚠️ Этот скрипт предназначен для Fedora. Обнаружена другая ОС."
+    echo "⚠️  Этот скрипт предназначен только для Fedora."
     exit 1
 fi
 
 # Определяем пользователя (даже если запущен через sudo)
 USER=${SUDO_USER:-$(whoami)}
 if [ "$USER" = "root" ]; then
-    echo "⚠️ Не удалось определить обычного пользователя. Добавление в группы пропущено."
+    echo "⚠️  Запущено от root — пропускаем добавление в группы."
     ADD_TO_GROUPS=false
 else
     ADD_TO_GROUPS=true
 fi
 
-# Выбор менеджера пакетов
+# Определяем менеджер пакетов (dnf5 или dnf)
 if command -v dnf5 >/dev/null 2>&1; then
     DNF="dnf5"
 else
@@ -34,7 +34,7 @@ echo "🔄 Обновление системы..."
 sudo $DNF upgrade -y
 
 # Установка необходимых пакетов
-echo "📦 Установка QEMU/KVM и зависимостей..."
+echo "📦 Установка QEMU/KVM, libvirt и Cockpit..."
 sudo $DNF install -y \
     qemu-kvm \
     libvirt \
@@ -43,11 +43,16 @@ sudo $DNF install -y \
     virt-manager \
     libvirt-client \
     libguestfs-tools \
+    cockpit \
     cockpit-machines \
+    spice-vdagent \
+    spice-webdavd \
+    spice-glib \
+    spice-server \
     libvirt-daemon-config-network  # гарантирует наличие default.xml
 
 # Включение и запуск служб
-echo "🔌 Включение и запуск служб libvirt..."
+echo "🔌 Включение и запуск служб..."
 sudo systemctl enable --now libvirtd
 sudo systemctl enable --now virtlogd
 sudo systemctl enable --now cockpit.socket
@@ -58,29 +63,30 @@ if [ "$ADD_TO_GROUPS" = true ]; then
     sudo usermod -aG libvirt,kvm "$USER"
 fi
 
-# Настройка SELinux (безопасно)
-echo "🛡️ Настройка SELinux для libvirt..."
-for bool in virt_use_nfs virt_use_samba; do
+# Настройка SELinux
+echo "🛡️ Настройка SELinux..."
+for bool in virt_use_nfs virt_use_samba cockpit_can_remote_network_connect; do
     if sudo getsebool "$bool" >/dev/null 2>&1; then
         sudo setsebool -P "$bool" 1
     else
-        echo "ℹ️ SELinux boolean '$bool' не найден — пропускаем."
+        echo "ℹ️  SELinux boolean '$bool' не найден — пропускаем."
     fi
 done
 
-# Настройка файервола (только если firewalld активен)
+# Настройка firewalld (если запущен)
 if systemctl is-active --quiet firewalld; then
-    echo "🔥 Настройка firewalld для libvirt..."
+    echo "🔥 Настройка firewalld..."
     sudo firewall-cmd --permanent --add-service=libvirt
     sudo firewall-cmd --permanent --add-service=libvirt-tls
     sudo firewall-cmd --permanent --add-service=mdns
+    sudo firewall-cmd --permanent --add-service=cockpit
     sudo firewall-cmd --reload
 else
-    echo "ℹ️ firewalld не активен — настройка пропущена."
+    echo "ℹ️  firewalld не активен — настройка пропущена."
 fi
 
-# Создание сети по умолчанию (virbr0)
-echo "🌐 Проверка сетевой сети по умолчанию (default)..."
+# Проверка сети по умолчанию
+echo "🌐 Проверка сети 'default'..."
 if [ -f /usr/share/libvirt/networks/default.xml ]; then
     if ! sudo virsh net-list --all | grep -q "default"; then
         echo "Создание сети 'default'..."
@@ -88,41 +94,44 @@ if [ -f /usr/share/libvirt/networks/default.xml ]; then
         sudo virsh net-autostart default
         sudo virsh net-start default
     else
+        if sudo virsh net-list --inactive | grep -q "default"; then
+            sudo virsh net-start default
+        fi
         echo "Сеть 'default' уже существует."
     fi
 else
-    echo "⚠️ Файл default.xml отсутствует. Убедитесь, что установлен пакет libvirt-daemon-config-network."
+    echo "⚠️  Файл default.xml отсутствует. Проверьте пакет libvirt-daemon-config-network."
 fi
 
-# Проверка модуля KVM
-echo "🔍 Проверка загрузки модуля KVM..."
+# Проверка загрузки модуля KVM
+echo "🔍 Проверка модуля KVM..."
 if lsmod | grep -q "kvm_"; then
-    echo "✅ Модуль KVM загружен"
+    echo "✅ Модуль KVM загружен."
 else
-    echo "❌ Модуль KVM не загружен. Проверьте, включена ли виртуализация в BIOS/UEFI."
+    echo "❌ Модуль KVM не загружен. Проверьте настройки BIOS/UEFI (VT-x/AMD-V)."
 fi
 
 # Проверка поддержки аппаратной виртуализации
-echo "💻 Проверка поддержки аппаратной виртуализации..."
+echo "💻 Проверка поддержки виртуализации..."
 if grep -Eq "vmx|svm" /proc/cpuinfo; then
-    echo "✅ Аппаратная виртуализация поддерживается"
+    echo "✅ Аппаратная виртуализация поддерживается."
 else
-    echo "❌ Аппаратная виртуализация не обнаружена"
+    echo "❌ Виртуализация не обнаружена (проверьте BIOS/UEFI)."
 fi
 
-# Завершение
+# Финал
 echo ""
 echo "🎉 Установка завершена!"
 if [ "$ADD_TO_GROUPS" = true ]; then
     echo "👉 Чтобы применить изменения групп, выполните:"
     echo "      newgrp libvirt"
-    echo "   или перезагрузите систему."
+    echo "   или просто перезагрузите систему."
 fi
 echo ""
-echo "🛠️  Для управления ВМ используйте:"
+echo "🛠️  Управление виртуальными машинами:"
 echo "   - virt-manager (GUI)"
 echo "   - virsh (CLI)"
-echo "   - Cockpit Web UI: http://localhost:9090 → Machines"
+echo "   - Cockpit Web UI: https://localhost:9090 → Раздел 'Виртуальные машины'"
 echo ""
-echo "💡 Совет: в среде Wayland запускайте virt-manager так:"
+echo "💡 Совет: в Wayland используйте:"
 echo "      GDK_BACKEND=x11 virt-manager"
