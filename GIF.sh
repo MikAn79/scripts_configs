@@ -13,3 +13,6 @@ DELAY=50
 convert -delay $DELAY "$IMAGE_DIR"/*.* "$OUTPUT_GIF"
 
 echo "GIF создан: $OUTPUT_GIF"
+
+
+
