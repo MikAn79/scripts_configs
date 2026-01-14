@@ -4,7 +4,7 @@
 SOURCE1="/home/mikan/Документы"
 SOURCE2="/home/mikan/Изображения"
 SOURCE3="/home/mikan/Programs"
-SOURCE4="/home/mikan/Yandex.Disk"
+#SOURCE4="/home/mikan/Yandex.Disk"
 SOURCE5="/home/mikan/.config/yandex-browser-beta"
 SOURCE6="/home/mikan/.config/yandex-disk"
 SOURCE7="/home/mikan/.config/yd-tools"

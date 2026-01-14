@@ -144,7 +144,7 @@ if $CLEAN_TMP; then
         log_message "INFO" "(Сухой запуск) Удаление файлов старше 2 дней в /tmp и /var/tmp"
     else
         find /tmp /var/tmp -depth -mindepth 1 -mtime +2 \( -type f -o -type d -empty \) -delete 2>/dev/null || true
-        journalctl --vacuum-time=2d --quiet
+        journalctl --vacuum-time=5d --quiet
     fi
 fi
 
