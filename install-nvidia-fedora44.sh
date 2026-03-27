@@ -1,13 +1,19 @@
 #!/bin/bash
-# Установка драйверов NVIDIA на Fedora 43 через RPM Fusion
+# Установка драйверов NVIDIA на Fedora 44 через RPM Fusion
 # Запускать в консольном режиме (Ctrl+Alt+F2) — НЕ в графической среде!
 
 set -e
 
-# Логирование (необязательно, но полезно)
-exec > >(tee -a ~/nvidia-install-$(date +%F_%H-%M).log) 2>&1
+# Проверка что скрипт запущен с sudo
+if [ "$EUID" -ne 0 ]; then
+    echo "❌ Этот скрипт должен быть запущен с sudo"
+    exit 1
+fi
 
-echo "=== Установка драйверов NVIDIA на Fedora 43 ==="
+# Логирование (необязательно, но полезно)
+exec > >(tee -a /root/nvidia-install-$(date +%F_%H-%M).log) 2>&1
+
+echo "=== Установка драйверов NVIDIA на Fedora 44 ==="
 echo "⚠️ ВАЖНО: Запустите этот скрипт в консольном режиме (Ctrl+Alt+F2)"
 echo "   Графическая среда должна быть выключена!"
 
@@ -18,10 +24,7 @@ if ! grep -q "Fedora" /etc/os-release 2>/dev/null; then
 fi
 
 # Проверка, не запущен ли X/Wayland
-if [ -n "$DISPLAY" ] && [ "$XDG_SESSION_TYPE" = "wayland" ]; then
-    echo "❌ Скрипт запущен в Wayland. Переключитесь в TTY (Ctrl+Alt+F2) и повторите."
-    exit 1
-elif [ -n "$DISPLAY" ]; then
+if [ "$XDG_SESSION_TYPE" = "wayland" ] || [ "$XDG_SESSION_TYPE" = "x11" ] || [ -n "$DISPLAY" ]; then
     echo "❌ Скрипт запущен в графической среде. Переключитесь в TTY (Ctrl+Alt+F2) и повторите."
     exit 1
 fi
@@ -79,8 +82,8 @@ if mokutil --sb-state 2>/dev/null | grep -q "SecureBoot enabled"; then
     echo "🔒 Secure Boot включён. Требуется подпись модуля NVIDIA:"
     echo "   1. После перезагрузки система запросит пароль MOK"
     echo "   2. Введите пароль и подтвердите подпись модуля"
-    echo "   3. Или выполните: sudo mokutil --import /var/lib/dkms/nvidia/*/x86_64/.../nvidia.ko"
-    echo "      (путь может отличаться — уточните в /var/lib/dkms/)"
+    echo "   3. Или выполните: sudo mokutil --import /var/lib/dkms/nvidia/.../x86_64/.../nvidia.ko"
+    echo "      (точный путь зависит от версии драйвера)"
 else
     echo "✅ Secure Boot выключен — подпись не требуется."
 fi
