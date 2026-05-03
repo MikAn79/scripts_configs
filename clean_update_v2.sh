@@ -227,18 +227,18 @@ fi
 log_message "INFO" "Рекомендуется выполнить перезагрузку системы"
 
 # --- Уведомление ---
-notify_msg="Все операции успешно завершены!\nРекомендуется выполнить перезагрузку системы."
-if $DRY_RUN; then
-    log_message "INFO" "(Сухой запуск) Уведомление не отправлено"
-else
-    if command -v kdialog &>/dev/null && [[ -n "${DISPLAY:-}" ]]; then
-        kdialog --title "Скрипт завершён" --msgbox "$notify_msg"
-    elif command -v notify-send &>/dev/null; then
-        notify-send "Скрипт завершён" "$notify_msg"
-    else
-        log_message "WARNING" "Уведомление не отправлено: нет kdialog или notify-send"
-    fi
-fi
+#notify_msg="Все операции успешно завершены!\nРекомендуется выполнить перезагрузку системы."
+#if $DRY_RUN; then
+ #   log_message "INFO" "(Сухой запуск) Уведомление не отправлено"
+#else
+    #if command -v kdialog &>/dev/null && [[ -n "${DISPLAY:-}" ]]; then
+        #kdialog --title "Скрипт завершён" --msgbox "$notify_msg"
+    #elif command -v notify-send &>/dev/null; then
+       # notify-send "Скрипт завершён" "$notify_msg"
+    #else
+  #      log_message "WARNING" "Уведомление не отправлено: нет kdialog или notify-send"
+   # fi
+#fi
 
 log_message "INFO" "=== Завершение ==="
 exit 0
