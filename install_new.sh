@@ -1,139 +1,94 @@
-#!/bin/sh
+#!/bin/bash
 
-echo ""
-echo "| Привет! Опять ставим систему заново? Ладно, дело ваше ... Давайте установим необходимый софт!"
+set -euo pipefail
 
-echo ""
-echo "| Итак, приступимс милорд:"
+echo
+echo "| Привет! Установим необходимый софт на Fedora 44."
 
-#Обновление системы после установки:
+echo
+echo "| Начинаем обновление и настройку репозиториев..."
 
-echo ""
-echo "| Обновимся :"
+echo
+echo "| Обновляем систему:"
 
-## Установка драйверов
+sudo dnf upgrade --refresh -y
+sudo dnf install -y dnf-plugins-core
 
-sudo add-apt-repository ppa:graphics-drivers/ppa
-sudo apt update
-sudo apt full-upgrade -y
-sudo apt update -y
+echo
+echo "| Настраиваем RPM Fusion и Flatpak:"
 
-# CURL
+sudo dnf install -y \
+    https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-44.noarch.rpm \
+    https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-44.noarch.rpm
 
-sudo apt-get install curl -y
+sudo dnf install -y flatpak plasma-discover-backend-flatpak
+sudo flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 
-# установка Flatpak
-echo ""
-echo "| Установим flatpak:"
+echo
+echo "| Устанавливаем базовый набор приложений:"
 
-sudo apt install flatpak plasma-discover-backend-flatpak
-flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+sudo dnf install -y \
+    curl \
+    conky \
+    lm_sensors \
+    psensor \
+    bleachbit \
+    mc \
+    neofetch \
+    htop \
+    btop \
+    vlc
 
-# Установка софта
-echo ""
-echo "| Установим софт:"
+echo
+echo "| Устанавливаем Google Chrome и Google Earth Pro:"
 
-# preload
+sudo dnf install -y https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+sudo dnf install -y https://dl.google.com/linux/direct/google-earth-pro-stable_current_x86_64.rpm || true
 
-sudo apt install preload -y
+echo
+echo "| Устанавливаем Visual Studio Code:"
 
-# Conky
+sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+sudo tee /etc/yum.repos.d/vscode.repo >/dev/null <<'EOF'
+[code]
+name=Visual Studio Code
+baseurl=https://packages.microsoft.com/yumrepos/vscode
+enabled=1
+gpgcheck=1
+gpgkey=https://packages.microsoft.com/keys/microsoft.asc
+EOF
+sudo dnf check-release-update || true
+sudo dnf install -y code
 
-sudo apt install conky-all -y
+echo
+echo "| Устанавливаем Anydesk (через RPM):"
 
-# Sensors
+sudo dnf install -y https://download.anydesk.com/linux/anydesk-6.4.0-1.el8.x86_64.rpm || true
 
-sudo apt install lm-sensors psensor -y
+echo
+echo ">>> Anydesk установлен (или пропущен, если RPM не доступен)."
 
-# Synaptic
+echo
+echo "| Настраиваем GIT:"
 
-sudo apt install synaptic -y
-
-# Чистильщик Bleachbit
-
-sudo apt install bleachbit -y
-
-# MC
-
-sudo apt install mc -y
-
-# Google Earth  # Google Chrome
-echo ""
-echo "| Google ... Не забыть почистить репы ))):"
-
-wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-sudo sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list'
-sudo apt update -y
-sudo touch /etc/default/google-chrome
-sudo apt install google-chrome-stable -y
-sudo apt install google-earth-pro-stable -y
-
-# neofetch
-
-sudo apt install neofetch -y
-
-# Htop
-
-sudo apt install htop -y
-sudo apt install btop -y
-
-# Mainline
-
-sudo add-apt-repository ppa:cappelikan/ppa -y
-sudo apt update -y
-sudo apt install mainline -y
-
-#Joplin
-
-#wget -O - https://raw.githubusercontent.com/laurent22/joplin/dev/Joplin_install_and_update.sh | bash
-
-#VLC Media Player
-
-#echo "Installing VLC Media Player"
-#sudo apt install vlc -y
-
-#Nvidia drivers
-#sudo ubuntu-drivers autoinstall
-
-# VS CODE
-
-curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor >microsoft.gpg
-sudo mv microsoft.gpg /etc/apt/trusted.gpg.d/microsoft.gpg
-sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
-sudo apt update -y
-sudo apt install code -y
-
-# Установка Anydesk
-
-#sudo flatpak install anydesk -y
-echo ""
-echo ">>> Anydesk успешно установлен и настроен."
-
-# GIT config
-
-git config --global user.email mikan979@gmail.com
+git config --global user.email "mikan979@gmail.com"
 git config --global user.name "MikAn79"
 
-# Grub Customizer. Настройка меню груб
+echo
+echo "| Устанавливаем QEMU/KVM и libvirt:"
 
-sudo add-apt-repository ppa:danielrichter2007/grub-customizer -y
-sudo apt update -y
-sudo apt install grub-customizer -y
+sudo dnf install -y qemu-kvm libvirt virt-install virt-manager bridge-utils libguestfs-tools
+sudo systemctl enable --now libvirtd
+sudo systemctl start libvirtd
+sudo usermod -aG kvm,libvirt "$USER"
 
-# Установка Qemu/KVM
+echo
+echo "| Очищаем систему после установки:"
 
-sudo apt install qemu-kvm virt-manager virtinst libvirt-clients bridge-utils libvirt-daemon-system -y &&
-    sudo systemctl enable --now libvirtd &&
-    sudo systemctl start libvirtd &&
-    sudo usermod -aG kvm $USER &&
-    sudo usermod -aG libvirt $USER &&
+sudo dnf autoremove -y
+sudo dnf clean all
 
-    # Очистка после установки
-    echo ""
-echo "| Почистимся... чистота - залог здоровья. Порядок - прежде всего )):"
-
-sudo apt autoremove && sudo apt clean && sudo apt autoclean
-
-echo 'Все готово/ Система настроена. Рекомендуется перезагрузка '
+echo
+echo "Все готово. Рекомендуется перезагрузить систему."
 
 # Конец установки
